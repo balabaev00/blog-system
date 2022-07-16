@@ -1,5 +1,6 @@
 import {User} from "./../../user/entity/user.entity";
 import {
+	Column,
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
@@ -12,6 +13,10 @@ export class Blog {
 	@PrimaryGeneratedColumn()
 	id: number;
 
+	@Column()
+	name: string;
+
+	@Column()
 	message: string;
 
 	@CreateDateColumn({name: `created_at`})
