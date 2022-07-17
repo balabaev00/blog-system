@@ -1,0 +1,55 @@
+import {User} from "./../user/entity/user.entity";
+import {CreateMessageDto, UpdateMessageDto} from "./dto/message.dto";
+import {Injectable} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {Message} from "./entity/message.entity";
+
+@Injectable()
+export class MessageService {
+	constructor(
+		@InjectRepository(Message) private messageRepository: Repository<Message>
+	) {}
+
+	/**
+	 * It creates a new message, sets the message and author properties, and then saves the message to the
+	 * database
+	 * @param {CreateMessageDto} dto - CreateMessageDto - This is the DTO that we created earlier.
+	 * @param {User} user - User - This is the user that is currently logged in.
+	 * @returns The new message that was created.
+	 */
+	async create(dto: CreateMessageDto, user: User) {
+		const newMessage = new Message();
+
+		newMessage.message = dto.message;
+		newMessage.author = user;
+
+		return await this.messageRepository.save(newMessage);
+	}
+
+	async update(dto: UpdateMessageDto, userId: number) {
+		const oldMessage = await this.messageRepository.findOne({id: dto.id});
+
+		if (!oldMessage) return `Message not found`;
+		if (oldMessage.author.id !== userId) return `You are not author message`;
+
+		oldMessage.message = dto.message;
+		return await this.messageRepository.save(oldMessage);
+	}
+
+	/**
+	 * It finds a message by its id, checks if the user is the author of the message, and if so, deletes
+	 * the message
+	 * @param {number} messageId - number - the id of the message to be deleted
+	 * @param {number} userId - number - the id of the user who is trying to delete the message
+	 * @returns Promise<Message>
+	 */
+	async delete(messageId: number, userId: number) {
+		const oldMessage = await this.messageRepository.findOne({id: messageId});
+
+		if (!oldMessage) return `Message not found`;
+		if (oldMessage.author.id !== userId) return `You are not author message`;
+
+		return await this.messageRepository.delete(oldMessage);
+	}
+}

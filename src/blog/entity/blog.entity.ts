@@ -5,8 +5,10 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
+	OneToMany,
 	PrimaryGeneratedColumn,
 } from "typeorm";
+import {Message} from "../../message/entity/message.entity";
 
 @Entity({name: `blogs`})
 export class Blog {
@@ -25,4 +27,7 @@ export class Blog {
 	@ManyToOne(() => User, user => user.blogs)
 	@JoinColumn({name: `author_id`})
 	author: User;
+
+	@OneToMany(() => Message, message => message.author)
+	messages: Message[];
 }
