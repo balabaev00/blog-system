@@ -1,10 +1,20 @@
 import {User} from "./../user/entity/user.entity";
 import {UserDecorator} from "./../user/decorators/user.decorator";
 import {AuthGuard} from "./../auth/guards/auth.guard";
-import {Body, Controller, Post, UseGuards} from "@nestjs/common";
-import {ApiTags} from "@nestjs/swagger";
+import {Body, Controller, Delete, Param, Post, Put, UseGuards} from "@nestjs/common";
+import {ApiCookieAuth, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {MessageService} from "./message.service";
-import {CreateMessageDto} from "./dto/message.dto";
+import {
+	CreateMessageDto,
+	CreateMessageReturn201,
+	CreateMessageReturn400,
+	DeleteMessageReturn204,
+	DeleteMessageReturn400,
+	UpdateMessageDto,
+	UpdateMessageReturn204,
+	UpdateMessageReturn400,
+} from "./dto/message.dto";
+import {Message} from "./entity/message.entity";
 
 @Controller(`message`)
 @ApiTags(`message`)
@@ -13,7 +23,94 @@ export class MessageController {
 
 	@Post(`create`)
 	@UseGuards(AuthGuard)
+	@ApiResponse({
+		status: 201,
+		description: `OK`,
+		type: CreateMessageReturn201,
+	})
+	@ApiResponse({
+		status: 400,
+		description: `Something is wrong`,
+		type: CreateMessageReturn400,
+	})
+	@ApiCookieAuth(`jwt`)
 	async create(@Body() dto: CreateMessageDto, @UserDecorator() user: User) {
 		const res = await this.messageService.create(dto, user);
+
+		if (res instanceof Message === false)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: `Something was wrong`,
+			};
+
+		return {
+			error: false,
+			status: 201,
+			blog: res,
+		};
+	}
+
+	@Put(`update`)
+	@UseGuards(AuthGuard)
+	@ApiResponse({
+		status: 204,
+		description: `OK`,
+		type: UpdateMessageReturn204,
+	})
+	@ApiResponse({
+		status: 400,
+		description: `Something is wrong`,
+		type: UpdateMessageReturn400,
+	})
+	@ApiCookieAuth(`jwt`)
+	async update(@Body() dto: UpdateMessageDto, @UserDecorator(`userId`) userId: number) {
+		const res = await this.messageService.update(dto, userId);
+
+		if (res instanceof String)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: res,
+			};
+
+		return {
+			error: false,
+			status: 204,
+			message: res,
+		};
+	}
+
+	@Delete(`:messageId`)
+	@UseGuards(AuthGuard)
+	@ApiResponse({
+		status: 204,
+		description: `Message was deleted`,
+		type: DeleteMessageReturn204,
+	})
+	@ApiResponse({
+		status: 400,
+		description: `Something is wrong`,
+		type: DeleteMessageReturn400,
+	})
+	@ApiCookieAuth(`jwt`)
+	async delete(
+		@Param(`messageId`) messageId: number,
+		@UserDecorator(`userId`) userId: number
+	) {
+		const res = await this.messageService.delete(messageId, userId);
+
+		if (res instanceof String)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: res,
+			};
+
+		return {
+			error: false,
+			status: 204,
+			message: `Message was deleted`,
+		};
 	}
 }

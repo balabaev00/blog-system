@@ -18,9 +18,6 @@ export class Blog {
 	@Column()
 	name: string;
 
-	@Column()
-	message: string;
-
 	@CreateDateColumn({name: `created_at`})
 	createdAt: Date;
 

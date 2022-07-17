@@ -7,12 +7,6 @@ export class CreateBlogDto {
 		example: `First buy`,
 	})
 	name: string;
-
-	@ApiProperty({
-		description: `Blog message`,
-		example: `Today I've bought ...`,
-	})
-	message: string;
 }
 
 export class UpdateBlogDto {
@@ -23,10 +17,10 @@ export class UpdateBlogDto {
 	blogId: number;
 
 	@ApiProperty({
-		description: `Blog message`,
-		example: `Today I've bought ...`,
+		description: `Blog name`,
+		example: `Blog name`,
 	})
-	message: string;
+	name: string;
 }
 
 export class CreateBlogReturn201 {
@@ -41,7 +35,6 @@ export class CreateBlogReturn201 {
 		example: {
 			id: 1,
 			name: `My blog`,
-			message: `Description blog`,
 			createdAt: new Date(),
 			authorId: 1,
 		},
@@ -87,7 +80,6 @@ export class UpdateBlogReturn204 {
 		example: {
 			id: 1,
 			name: `My blog`,
-			message: `Description blog`,
 			createdAt: new Date(),
 			authorId: 1,
 		},
@@ -174,14 +166,12 @@ export class GetBlogByUserIdReturn200 {
 			{
 				id: 1,
 				name: `My blog`,
-				message: `Description blog`,
 				createdAt: new Date(),
 				authorId: 1,
 			},
 			{
 				id: 2,
 				name: `Test blog`,
-				message: `Test description blog`,
 				createdAt: new Date(),
 				authorId: 1,
 			},
@@ -209,14 +199,12 @@ export class GetBlogsReturn200 {
 			{
 				id: 1,
 				name: `My blog`,
-				message: `Description blog`,
 				createdAt: new Date(),
 				authorId: 1,
 			},
 			{
 				id: 2,
 				name: `Test blog`,
-				message: `Test description blog`,
 				createdAt: new Date(),
 				authorId: 1,
 			},

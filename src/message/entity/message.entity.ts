@@ -5,6 +5,7 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import {Blog} from "../../blog/entity/blog.entity";
@@ -20,7 +21,11 @@ export class Message {
 	@CreateDateColumn({name: `created_at`})
 	createdAt: Date;
 
-	@ManyToOne(() => Blog, blog => blog.messages)
+	@ManyToOne(() => User, user => user.messages)
 	@JoinColumn({name: `author_id`})
 	author: User;
+
+	@ManyToOne(() => Blog, blog => blog.messages)
+	@JoinColumn({name: `blog_id`})
+	blog: Blog;
 }

@@ -18,7 +18,6 @@ export class BlogService {
 	async create(dto: CreateBlogDto, user: User) {
 		const newBlog = new Blog();
 
-		newBlog.message = dto.message;
 		newBlog.name = dto.name;
 		newBlog.author = user;
 
@@ -26,10 +25,9 @@ export class BlogService {
 	}
 
 	/**
-	 * It takes a blog id and a user id, finds the blog, checks if the user is the author of the blog, and
-	 * if so, updates the blog
-	 * @param {UpdateBlogDto} dto - UpdateBlogDto - this is the data transfer object that we will use to
-	 * update the blog.
+	 * It finds a blog by its id and checks if the user is the owner of the blog. If the user is the
+	 * owner, it updates the blog's name and saves it
+	 * @param {UpdateBlogDto} dto - UpdateBlogDto - This is the DTO that we created earlier.
 	 * @param {number} userId - The id of the user who is making the request.
 	 * @returns The updated blog
 	 */
@@ -38,7 +36,7 @@ export class BlogService {
 
 		if (oldBlog instanceof HttpException) return oldBlog;
 
-		oldBlog.message = dto.message;
+		oldBlog.name = dto.name;
 		return await this.blogRepository.save(oldBlog);
 	}
 
@@ -59,6 +57,10 @@ export class BlogService {
 			);
 
 		return oldBlog;
+	}
+
+	async findById(blogId: number) {
+		return await this.blogRepository.findOne({id: blogId});
 	}
 
 	/**

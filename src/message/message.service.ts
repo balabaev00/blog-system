@@ -1,3 +1,4 @@
+import {BlogService} from "./../blog/blog.service";
 import {User} from "./../user/entity/user.entity";
 import {CreateMessageDto, UpdateMessageDto} from "./dto/message.dto";
 import {Injectable} from "@nestjs/common";
@@ -8,7 +9,8 @@ import {Message} from "./entity/message.entity";
 @Injectable()
 export class MessageService {
 	constructor(
-		@InjectRepository(Message) private messageRepository: Repository<Message>
+		@InjectRepository(Message) private messageRepository: Repository<Message>,
+		private blogService: BlogService
 	) {}
 
 	/**
@@ -23,6 +25,9 @@ export class MessageService {
 
 		newMessage.message = dto.message;
 		newMessage.author = user;
+
+		const oldBlog = await this.blogService.findById(dto.blogId);
+		if (!oldBlog) return `Blog not found`;
 
 		return await this.messageRepository.save(newMessage);
 	}
