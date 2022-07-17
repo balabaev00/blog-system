@@ -1,3 +1,4 @@
+import {UserService} from "./../user/user.service";
 import {BlogService} from "./../blog/blog.service";
 import {User} from "./../user/entity/user.entity";
 import {CreateMessageDto, UpdateMessageDto} from "./dto/message.dto";
@@ -10,7 +11,8 @@ import {Message} from "./entity/message.entity";
 export class MessageService {
 	constructor(
 		@InjectRepository(Message) private messageRepository: Repository<Message>,
-		private blogService: BlogService
+		private blogService: BlogService,
+		private userService: UserService
 	) {}
 
 	/**
@@ -24,6 +26,10 @@ export class MessageService {
 		const newMessage = new Message();
 
 		newMessage.message = dto.message;
+		const author = await this.userService.findOneByEmail(user.email);
+
+		if (!author) return `User not found`;
+
 		newMessage.author = user;
 
 		const oldBlog = await this.blogService.findById(dto.blogId);

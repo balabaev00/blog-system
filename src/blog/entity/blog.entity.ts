@@ -25,6 +25,6 @@ export class Blog {
 	@JoinColumn({name: `author_id`})
 	author: User;
 
-	@OneToMany(() => Message, message => message.author)
+	@OneToMany(() => Message, message => message.blog)
 	messages: Message[];
 }

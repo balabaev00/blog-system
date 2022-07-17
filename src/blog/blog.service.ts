@@ -1,13 +1,18 @@
+import {UserService} from "./../user/user.service";
 import {User} from "./../user/entity/user.entity";
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import {CreateBlogDto, UpdateBlogDto} from "./dto/blog.dto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Blog} from "./entity/blog.entity";
 import {Repository} from "typeorm";
+import {BlogResponse} from "types";
 
 @Injectable()
 export class BlogService {
-	constructor(@InjectRepository(Blog) private blogRepository: Repository<Blog>) {}
+	constructor(
+		@InjectRepository(Blog) private blogRepository: Repository<Blog>,
+		private userService: UserService
+	) {}
 
 	/**
 	 * It creates a new blog, sets the message, name, and author, and then saves it to the database
@@ -19,7 +24,12 @@ export class BlogService {
 		const newBlog = new Blog();
 
 		newBlog.name = dto.name;
-		newBlog.author = user;
+
+		const author = await this.userService.findOneByEmail(user.email);
+
+		if (!author) return `User not found`;
+
+		newBlog.author = author;
 
 		return await this.blogRepository.save(newBlog);
 	}
@@ -60,7 +70,9 @@ export class BlogService {
 	}
 
 	async findById(blogId: number) {
-		return await this.blogRepository.findOne({id: blogId});
+		const blog = await this.blogRepository.findOne({id: blogId});
+
+		return this.prepareResponse(blog);
 	}
 
 	/**
@@ -82,7 +94,8 @@ export class BlogService {
 			.leftJoinAndSelect(`blog.author`, `user`)
 			.where(`blog.author_id = :userId`, {userId: userId})
 			.getMany();
-		return blogs;
+
+		return blogs.map(item => this.prepareResponse(item));
 	}
 
 	/**
@@ -98,5 +111,19 @@ export class BlogService {
 		if (blog instanceof HttpException) return blog;
 
 		return await this.blogRepository.delete(blog);
+	}
+
+	/**
+	 * It takes a Blog object and returns a BlogResponse object
+	 * @param {Blog} blog - Blog - this is the blog object that we're going to be returning.
+	 * @returns A BlogResponse object.
+	 */
+	private prepareResponse(blog: Blog): BlogResponse {
+		return {
+			id: blog.id,
+			name: blog.name,
+			createdAt: blog.createdAt,
+			authorId: blog.author.id,
+		};
 	}
 }
