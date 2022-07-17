@@ -78,11 +78,18 @@ export class BlogService {
 		const blogs = await this.blogRepository
 			.createQueryBuilder(`blog`)
 			.leftJoinAndSelect(`blog.author`, `user`)
-			.where(`blog.author_id = :userID`, {userId: userId})
+			.where(`blog.author_id = :userId`, {userId: userId})
 			.getMany();
 		return blogs;
 	}
 
+	/**
+	 * It finds a blog by its id and checks if the user is the owner of the blog. If the user is the
+	 * owner, it deletes the blog
+	 * @param {number} blogId - The id of the blog to be deleted
+	 * @param {number} userId - The id of the user who is trying to delete the blog.
+	 * @returns The blog is being returned.
+	 */
 	async delete(blogId: number, userId: number) {
 		const blog = await this.findAndCheck(blogId, userId);
 

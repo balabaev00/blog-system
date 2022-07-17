@@ -1,5 +1,5 @@
 import {Body, Controller, HttpException, Post, Res} from "@nestjs/common";
-import {ApiBody, ApiCookieAuth, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Response} from "express";
 import {AuthService} from "./auth.service";
 import {

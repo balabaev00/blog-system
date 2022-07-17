@@ -1,4 +1,3 @@
-import {User} from "./../../user/entity/user.entity";
 import {ApiProperty} from "@nestjs/swagger";
 import {Blog} from "../entity/blog.entity";
 
@@ -118,6 +117,116 @@ export class UpdateBlogReturn400 {
 	@ApiProperty({
 		description: `Status code`,
 		example: `400`,
+	})
+	status: number;
+}
+
+export class DeleteBlogReturn204 {
+	@ApiProperty({
+		description: `false - all good, true - check errorMessage`,
+		example: false,
+	})
+	error: boolean;
+
+	@ApiProperty({
+		description: `Message`,
+		example: `Blog was deleted`,
+	})
+	message: string;
+
+	@ApiProperty({
+		description: `Status code`,
+		example: `204`,
+	})
+	status: number;
+}
+
+export class DeleteBlogReturn400 {
+	@ApiProperty({
+		description: `false - all good, true - check errorMessage`,
+		example: true,
+	})
+	error: boolean;
+
+	@ApiProperty({
+		description: `Description of error`,
+		example: `Blog has not been deleted`,
+	})
+	errorMessage: string;
+
+	@ApiProperty({
+		description: `Status code`,
+		example: `400`,
+	})
+	status: number;
+}
+
+export class GetBlogByUserIdReturn200 {
+	@ApiProperty({
+		description: `false - all good, true - check errorMessage`,
+		example: false,
+	})
+	error: boolean;
+
+	@ApiProperty({
+		description: `Blog entities`,
+		example: [
+			{
+				id: 1,
+				name: `My blog`,
+				message: `Description blog`,
+				createdAt: new Date(),
+				authorId: 1,
+			},
+			{
+				id: 2,
+				name: `Test blog`,
+				message: `Test description blog`,
+				createdAt: new Date(),
+				authorId: 1,
+			},
+		],
+	})
+	blogs: Blog[];
+
+	@ApiProperty({
+		description: `Status code`,
+		example: `204`,
+	})
+	status: number;
+}
+
+export class GetBlogsReturn200 {
+	@ApiProperty({
+		description: `false - all good, true - check errorMessage`,
+		example: false,
+	})
+	error: boolean;
+
+	@ApiProperty({
+		description: `Blog entities`,
+		example: [
+			{
+				id: 1,
+				name: `My blog`,
+				message: `Description blog`,
+				createdAt: new Date(),
+				authorId: 1,
+			},
+			{
+				id: 2,
+				name: `Test blog`,
+				message: `Test description blog`,
+				createdAt: new Date(),
+				authorId: 1,
+			},
+		],
+	})
+	blogs: Blog[];
+
+	@ApiProperty({
+		description: `Status code`,
+		example: `200`,
 	})
 	status: number;
 }

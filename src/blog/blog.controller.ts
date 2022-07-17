@@ -17,6 +17,10 @@ import {
 	CreateBlogDto,
 	CreateBlogReturn201,
 	CreateBlogReturn400,
+	DeleteBlogReturn204,
+	DeleteBlogReturn400,
+	GetBlogByUserIdReturn200,
+	GetBlogsReturn200,
 	UpdateBlogDto,
 	UpdateBlogReturn204,
 	UpdateBlogReturn400,
@@ -90,26 +94,67 @@ export class BlogController {
 	}
 
 	@Get(``)
+	@ApiResponse({
+		status: 200,
+		description: `Blogs array`,
+		type: GetBlogsReturn200,
+	})
 	async getAll() {
 		const res = await this.blogService.findAll();
 
-		return res;
+		return {
+			error: false,
+			status: 200,
+			blogs: res,
+		};
 	}
 
 	@Get(`:userId`)
+	@ApiResponse({
+		status: 200,
+		description: `Blogs array`,
+		type: GetBlogByUserIdReturn200,
+	})
 	async getByUserId(@Param(`userId`) userId: number) {
 		const res = await this.blogService.findByUserId(userId);
 
-		return res;
+		return {
+			error: false,
+			status: 200,
+			blogs: res,
+		};
 	}
 
 	@Delete(`:blogId`)
+	@UseGuards(AuthGuard)
+	@ApiResponse({
+		status: 204,
+		description: `Blog was deleted`,
+		type: DeleteBlogReturn204,
+	})
+	@ApiResponse({
+		status: 400,
+		description: `Something is wrong`,
+		type: DeleteBlogReturn400,
+	})
+	@ApiCookieAuth(`jwt`)
 	async delete(
 		@Param(`blogId`) blogId: number,
 		@UserDecorator(`userId`) userId: number
 	) {
 		const res = await this.blogService.delete(blogId, userId);
 
-		return res;
+		if (res instanceof HttpException)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: `Something was wrong`,
+			};
+
+		return {
+			error: false,
+			status: 204,
+			message: `Blog was deleted`,
+		};
 	}
 }
