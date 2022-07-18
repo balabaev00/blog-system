@@ -16,6 +16,10 @@ $ npm run start
 $ npm run start:dev
 ```
 
+App will be worked on localhost:3000/
+
+Swagger will be worked on localhost:3000/api
+
 #### ENV
 
 Before start project you should create `.env` file. Look into `.env.template`.
