@@ -69,6 +69,11 @@ export class BlogService {
 		return oldBlog;
 	}
 
+	/**
+	 * It finds a blog by its id and returns the blog
+	 * @param {number} blogId - number - This is the id of the blog we want to find.
+	 * @returns The blog object
+	 */
 	async findById(blogId: number) {
 		const blog = await this.blogRepository.findOne({id: blogId});
 
