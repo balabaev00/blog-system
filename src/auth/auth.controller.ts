@@ -58,8 +58,13 @@ export class AuthController {
 	async signInLocal(@Body() dto: LoginDto, @Res({passthrough: true}) r: Response) {
 		const resp = await this.authService.signInLocal(dto);
 
-		if (resp instanceof HttpException) return resp;
+		if (resp instanceof HttpException)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: `Something is wrong`,
+			};
 
-		return {accessToken: resp};
+		return {error: false, status: 200, accessToken: resp};
 	}
 }
