@@ -30,7 +30,7 @@ export class MessageService {
 
 		if (!author) return `User not found`;
 
-		newMessage.author = user;
+		newMessage.author = author;
 
 		const oldBlog = await this.blogService.findById(dto.blogId);
 		if (!oldBlog) return `Blog not found`;
@@ -39,7 +39,12 @@ export class MessageService {
 	}
 
 	async update(dto: UpdateMessageDto, userId: number) {
-		const oldMessage = await this.messageRepository.findOne({id: dto.id});
+		const oldMessage = await this.messageRepository
+			.createQueryBuilder(`message`)
+			.leftJoinAndSelect(`message.author`, `user`)
+			.leftJoinAndSelect(`message.blog`, `blog`)
+			.where(`message.id = :messageId`, {messageId: dto.id})
+			.getOne();
 
 		if (!oldMessage) return `Message not found`;
 		if (oldMessage.author.id !== userId) return `You are not author message`;
@@ -56,8 +61,12 @@ export class MessageService {
 	 * @returns Promise<Message>
 	 */
 	async delete(messageId: number, userId: number) {
-		const oldMessage = await this.messageRepository.findOne({id: messageId});
-
+		const oldMessage = await this.messageRepository
+			.createQueryBuilder(`message`)
+			.leftJoinAndSelect(`message.author`, `user`)
+			.leftJoinAndSelect(`message.blog`, `blog`)
+			.where(`message.id = :messageId`, {messageId: messageId})
+			.getOne();
 		if (!oldMessage) return `Message not found`;
 		if (oldMessage.author.id !== userId) return `You are not author message`;
 

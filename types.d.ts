@@ -9,3 +9,10 @@ export interface BlogResponse {
 	createdAt: Date;
 	authorId: number;
 }
+
+export interface MessageResponse {
+	id: number;
+	message: string;
+	createdAt: Date;
+	authorId: number;
+}

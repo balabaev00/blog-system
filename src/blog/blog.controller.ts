@@ -27,6 +27,7 @@ import {
 } from "./dto/blog.dto";
 import {ApiCookieAuth, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Blog} from "./entity/blog.entity";
+import {BlogResponse} from "types";
 
 @Controller(`blog`)
 @ApiTags(`blog`)
@@ -49,7 +50,7 @@ export class BlogController {
 	async create(@Body() dto: CreateBlogDto, @UserDecorator() user: User) {
 		const res = await this.blogService.create(dto, user);
 
-		if (res instanceof Blog === false)
+		if (res === `User not found`)
 			return {
 				error: true,
 				status: 400,
@@ -59,7 +60,7 @@ export class BlogController {
 		return {
 			error: false,
 			status: 201,
-			blog: res,
+			blog: this.prepareResponse(res),
 		};
 	}
 
@@ -89,7 +90,7 @@ export class BlogController {
 		return {
 			error: false,
 			status: 204,
-			blog: res,
+			blog: this.prepareResponse(res),
 		};
 	}
 
@@ -105,7 +106,7 @@ export class BlogController {
 		return {
 			error: false,
 			status: 200,
-			blogs: res,
+			blogs: res.map(item => this.prepareResponse(item)),
 		};
 	}
 
@@ -121,7 +122,7 @@ export class BlogController {
 		return {
 			error: false,
 			status: 200,
-			blogs: res,
+			blogs: res.map(item => this.prepareResponse(item)),
 		};
 	}
 
@@ -155,6 +156,20 @@ export class BlogController {
 			error: false,
 			status: 204,
 			message: `Blog was deleted`,
+		};
+	}
+
+	/**
+	 * It takes a Blog object and returns a BlogResponse object
+	 * @param {Blog} blog - Blog - this is the blog object that we're going to be returning.
+	 * @returns A BlogResponse object.
+	 */
+	private prepareResponse(blog: Blog): BlogResponse {
+		return {
+			id: blog.id,
+			name: blog.name,
+			createdAt: blog.createdAt,
+			authorId: blog.author.id,
 		};
 	}
 }

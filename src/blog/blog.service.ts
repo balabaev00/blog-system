@@ -57,7 +57,11 @@ export class BlogService {
 	 * @returns Blog or HttpException
 	 */
 	async findAndCheck(blogId: number, userId: number) {
-		const oldBlog = await this.blogRepository.findOne({id: blogId});
+		const oldBlog = await this.blogRepository
+			.createQueryBuilder(`blog`)
+			.leftJoinAndSelect(`blog.author`, `user`)
+			.where(`blog.id = :blogId`, {blogId: blogId})
+			.getOne();
 
 		if (!oldBlog) return new HttpException(`Blog not found`, HttpStatus.BAD_REQUEST);
 		if (oldBlog.author.id !== userId)
@@ -77,7 +81,7 @@ export class BlogService {
 	async findById(blogId: number) {
 		const blog = await this.blogRepository.findOne({id: blogId});
 
-		return this.prepareResponse(blog);
+		return blog;
 	}
 
 	/**
@@ -85,7 +89,12 @@ export class BlogService {
 	 * @returns An array of all the blogs in the database.
 	 */
 	async findAll() {
-		return await this.blogRepository.find();
+		const blogs = await this.blogRepository
+			.createQueryBuilder(`blog`)
+			.leftJoinAndSelect(`blog.author`, `user`)
+			.getMany();
+
+		return blogs;
 	}
 
 	/**
@@ -100,7 +109,7 @@ export class BlogService {
 			.where(`blog.author_id = :userId`, {userId: userId})
 			.getMany();
 
-		return blogs.map(item => this.prepareResponse(item));
+		return blogs;
 	}
 
 	/**
@@ -115,20 +124,6 @@ export class BlogService {
 
 		if (blog instanceof HttpException) return blog;
 
-		return await this.blogRepository.delete(blog);
-	}
-
-	/**
-	 * It takes a Blog object and returns a BlogResponse object
-	 * @param {Blog} blog - Blog - this is the blog object that we're going to be returning.
-	 * @returns A BlogResponse object.
-	 */
-	private prepareResponse(blog: Blog): BlogResponse {
-		return {
-			id: blog.id,
-			name: blog.name,
-			createdAt: blog.createdAt,
-			authorId: blog.author.id,
-		};
+		return await this.blogRepository.remove(blog);
 	}
 }

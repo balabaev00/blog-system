@@ -15,6 +15,7 @@ import {
 	UpdateMessageReturn400,
 } from "./dto/message.dto";
 import {Message} from "./entity/message.entity";
+import {MessageResponse} from "types";
 
 @Controller(`message`)
 @ApiTags(`message`)
@@ -37,17 +38,17 @@ export class MessageController {
 	async create(@Body() dto: CreateMessageDto, @UserDecorator() user: User) {
 		const res = await this.messageService.create(dto, user);
 
-		if (res instanceof Message === false)
+		if (res === `Blog not found` || res === `User not found`)
 			return {
 				error: true,
 				status: 400,
-				errorMessage: `Something was wrong`,
+				errorMessage: res,
 			};
 
 		return {
 			error: false,
 			status: 201,
-			blog: res,
+			message: this.prepareResponse(res),
 		};
 	}
 
@@ -67,7 +68,7 @@ export class MessageController {
 	async update(@Body() dto: UpdateMessageDto, @UserDecorator(`userId`) userId: number) {
 		const res = await this.messageService.update(dto, userId);
 
-		if (res instanceof String)
+		if (res === `Message not found` || res === `You are not author message`)
 			return {
 				error: true,
 				status: 400,
@@ -77,7 +78,7 @@ export class MessageController {
 		return {
 			error: false,
 			status: 204,
-			message: res,
+			message: this.prepareResponse(res),
 		};
 	}
 
@@ -111,6 +112,15 @@ export class MessageController {
 			error: false,
 			status: 204,
 			message: `Message was deleted`,
+		};
+	}
+
+	private prepareResponse(message: Message): MessageResponse {
+		return {
+			id: message.id,
+			message: message.message,
+			createdAt: message.createdAt,
+			authorId: message.author.id,
 		};
 	}
 }
