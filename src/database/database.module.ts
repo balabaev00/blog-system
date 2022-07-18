@@ -23,6 +23,12 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 				cli: {
 					migrationsDir: `src/database/migrations`,
 				},
+				ssl: configService.get(`POSTGRES_LOGGING`),
+				extra: {
+					ssl: {
+						rejectUnauthorized: false,
+					},
+				},
 			}),
 			inject: [ConfigService],
 		}),
