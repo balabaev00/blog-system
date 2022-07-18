@@ -1,6 +1,10 @@
 {
   "name": "blog",
   "version": "0.0.1",
+  "engines": {
+    "node": "16.13.2",
+    "npm": "8.1.2"
+  },
   "description": "",
   "author": "",
   "private": true,
@@ -86,10 +90,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "engines": {
-      "node": "16.13.2",
-      "npm": "8.1.2"
-    }
+    "testEnvironment": "node"
   }
 }
